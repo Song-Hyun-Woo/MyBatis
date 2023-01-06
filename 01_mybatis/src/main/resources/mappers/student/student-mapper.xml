@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="student">
+	<insert id="insertStudent">
+		INSERT INTO STUDENT VALUES(SEQ_STUDENT.NEXTVAL,
+		'유병승','01012341234','yoo@yoo.com','경기도시흥시',default)
+	</insert>
+	<!-- 매개변수있는 쿼리문 실행하기 
+		매핑되는 값을 #{명칭}
+	-->
+	<insert id="insertStudentName" parameterType="string">
+		INSERT INTO STUDENT VALUES(SEQ_STUDENT.NEXTVAL,
+		#{name},'01012341234','yoo@yoo.com','경기도시흥시',default)
+	</insert>
+	
+	<insert id="insertStudentInfo" parameterType="student">
+		INSERT INTO STUDENT VALUES(SEQ_STUDENT.NEXTVAL,
+		#{name},#{phone},#{email},#{addr},default)
+	</insert>
+	
+	<update id="updateStudent" parameterType="student">
+		UPDATE STUDENT SET STUDENT_TEL=#{phone},
+		STUDENT_EMAIL=#{email}, STUDENT_ADDR=#{addr}
+		WHERE STUDENT_NO=#{no} 
+	</update>
+	
+	
+	<!-- 
+		select태그는 반드시 resultType||resultMap속성을 선언해줘야한다.
+		resultType : 실제 java에서 사용하고 있는 타입을 지정할때 사용  
+		resultMap : vo객체와 테이블의 명칭이 불일치할때 매핑시켜주는 
+					mybatis용 객체를 선언해서 이용할때
+	 -->
+	<select id="selectStudentCount" resultType="_int">
+		SELECT COUNT(*) FROM STUDENT
+	</select>
+	<!-- 
+		id태그 : pk값을 갖는 데이터
+		result태그 : 일반 데이터
+		설정속성 : property(객체 필드명) column(resultSet 컬럼명)
+		
+		테이블 객체 연관관계 매핑
+		association태그
+		collection태그
+	-->
+	<resultMap type="student" id="studentMap">
+		<id property="no" column="student_no"/>
+		<result property="name" column="student_name"/>
+		<result property="phone" column="student_tel"/>
+		<result property="email" column="student_email"/>
+		<result property="addr" column="student_addr"/>
+	</resultMap>
+	<!-- resultType="com.mybatis.model.vo.Student" -->
+	<select id="selectStudent" parameterType="_int" 
+		resultMap="studentMap">
+	<!-- 	SELECT student_no as no, student_name as name,
+		student_tel as phone, student_email as email,
+		student_addr as addr, reg_date		 -->
+		SELECT *	
+		 FROM STUDENT WHERE STUDENT_NO=#{no}
+	</select>
+	
+	<select id="selectStudentAll" resultMap="studentMap">
+		SELECT * FROM STUDENT
+	</select>
+	
+	<select id="selectStudentName" parameterType="string" resultMap="studentMap">
+		SELECT * FROM STUDENT WHERE STUDENT_NAME LIKE '%'||#{name}||'%' 
+	</select>
+	
+	<select id="selectStudentMap" parameterType="_int" resultType="map">
+		SELECT * FROM STUDENT WHERE STUDENT_NO=#{no}
+	</select>
+	
+	<select id="selectStudentAllMap" resultType="map">
+		SELECT * FROM STUDENT
+	</select>
+	
+	<select id="selectPageList" resultMap="studentMap">
+		SELECT * FROM STUDENT
+	</select>
+	
+	
+</mapper>
